@@ -16,6 +16,8 @@ OUT_TAKEN = "Damage Taken from \"{0}\" - {1} in {2} hit"
 URL = "localhost"
 PORT = 2121
 
+LastLine = ""
+
 async def read_line(reader) -> str:
     outp = b""
     while True:
@@ -25,6 +27,7 @@ async def read_line(reader) -> str:
         if c == b"\n":
             break
         outp += c
+    LastLine = outp.decode("utf-8")
     return outp.decode("utf-8")
 
 # return val: (type, name, damage, hits)
@@ -69,10 +72,12 @@ async def output_parser(reader, writer):
         else:
             handle_line(outp)
 def main():
-    loop = asyncio.get_event_loop()
-    coro = telnetlib3.open_connection(URL, PORT, shell=output_parser, encoding=None)
-    reader, writer = loop.run_until_complete(coro)
-    loop.run_until_complete(writer.protocol.waiter_closed)
+    while True:
+        loop = asyncio.get_event_loop()
+        coro = telnetlib3.open_connection(URL, PORT, shell=output_parser, encoding=None)
+        reader, writer = loop.run_until_complete(coro)
+        loop.run_until_complete(writer.protocol.waiter_closed)
+        print("disconnected")
 
 if __name__ == "__main__":
     main()
