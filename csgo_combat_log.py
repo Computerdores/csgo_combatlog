@@ -22,6 +22,7 @@ def print_entry(entry: tuple[int,str,int,int]):
     print(template.format(entry[1], color(entry[2]), color(entry[3])))
 
 def print_all_entries():
+    print(OUT_HEADER)
     for e in last_log:
         print_entry(e)
 
@@ -32,7 +33,6 @@ def handle_line(line: str):
     m = match_line(line)
     if m[0] == 1:
         current_line = 0
-        print(OUT_HEADER)
     elif m[0] in [2,4]:
         if current_line < len(last_log):
             if last_log[current_line] != m:
