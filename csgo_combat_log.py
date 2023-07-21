@@ -1,10 +1,7 @@
 import asyncio, telnetlib3
-from clint.textui import colored
-from console_parsing import *
 
-OUT_HEADER = "#--------------------------------[ Combat Log ]--------------------------------#"
-OUT_GIVEN = "Damage Given to   \"{0}\" - {1} in {2} hit"
-OUT_TAKEN = "Damage Taken from \"{0}\" - {1} in {2} hit"
+from console_parsing  import *
+from console_printing import *
 
 URL = "localhost"
 PORT = 2121
@@ -12,19 +9,6 @@ PORT = 2121
 current_line = 0
 temp = False
 last_log = []
-
-def print_entry(entry: tuple[int,str,int,int]):
-    template = OUT_TAKEN
-    color = colored.red
-    if entry[0] == 2:
-        template = OUT_GIVEN
-        color = colored.green
-    print(template.format(entry[1], color(entry[2]), color(entry[3])))
-
-def print_all_entries():
-    print(OUT_HEADER)
-    for e in last_log:
-        print_entry(e)
 
 def handle_line(line: str):
     global current_line
@@ -39,13 +23,13 @@ def handle_line(line: str):
                 last_log = last_log[:current_line+1]
                 last_log[current_line] = m
                 temp = True
-                print_all_entries()
+                print_all_entries(last_log)
         else:
             if not temp:
                 temp = True
-                print_all_entries()
+                print_all_entries(last_log)
             last_log.append(m)
-            print_entry(m)
+            print_entry(*m)
         current_line += 1
 
 
