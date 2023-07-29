@@ -18,8 +18,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         payload = json.loads(body)
 
         self.parse_payload(payload, self.server.gamestate_manager)
-        if len(payload.keys()) > 0:
-            print(f"bomb: {self.server.gamestate_manager._bomb}")
+        #if len(payload.keys()) > 0:
+        #    print(f"bomb: {self.server.gamestate_manager._bomb}")
         
     def parse_payload(self, payload: dict, gamestate_manager: GameStateManager):
         if "round" in payload:
@@ -62,7 +62,93 @@ class RequestHandler(BaseHTTPRequestHandler):
             gamestate_manager.map.apply_souveniers_total(map_data["souvenirs_total"])
 
     def parse_player(self, player_data: dict, gamestate_manager: GameStateManager):
-        pass # TODO: parse everything
+        if "match_stats" in player_data:
+            if "kills" in player_data["match_stats"]:
+                gamestate_manager.player.match_stats.apply_kills(player_data["match_stats"]["kills"])
+            if "assists" in player_data["match_stats"]:
+                gamestate_manager.player.match_stats.apply_assists(player_data["match_stats"]["assists"])
+            if "deaths" in player_data["match_stats"]:
+                gamestate_manager.player.match_stats.apply_deaths(player_data["match_stats"]["deaths"])
+            if "mvps" in player_data["match_stats"]:
+                gamestate_manager.player.match_stats.apply_mvps(player_data["match_stats"]["mvps"])
+            if "score" in player_data["match_stats"]:
+                gamestate_manager.player.match_stats.apply_score(player_data["match_stats"]["score"])
+
+
+        if "state" in player_data:
+            if "health" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_health(player_data["state"]["health"])
+            if "armor" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_armor(player_data["state"]["armor"])
+            if "helmet" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_helmet(player_data["state"]["helmet"])
+
+            if "defusekit" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_defusekit(player_data["state"]["defusekit"])
+            else:
+                gamestate_manager.player.player_state.apply_defusekit(False)
+
+            if "flashed" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_flashed(player_data["state"]["flashed"])
+            if "smoked" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_smoked(player_data["state"]["smoked"])
+            if "burning" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_burning(player_data["state"]["burning"])
+            if "money" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_money(player_data["state"]["money"])
+            if "round_kills" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_round_kills(player_data["state"]["round_kills"])
+            if "round_killhs" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_round_killhs(player_data["state"]["round_killhs"])
+            if "equip_value" in player_data["state"]:
+                gamestate_manager.player.player_state.apply_equip_value(player_data["state"]["equip_value"])
+
+
+        if "weapons" in player_data:
+            for k in player_data["weapons"].keys():
+                w = gamestate_manager.player.get_weapon(k)
+                w_data = player_data["weapons"][k]
+
+                if "name" in w_data:
+                    w.apply_name(w_data["name"])
+                else:
+                    w.apply_name(None)
+                
+                if "paintkit" in w_data:
+                    w.apply_paintkit(w_data["paintkit"])
+                else:
+                    w.apply_paintkit(None)
+                
+                if "type" in w_data:
+                    w.apply_type(w_data["type"])
+                else:
+                    w.apply_type(None)
+                
+                if "ammo_clip" in w_data:
+                    w.apply_ammo_clip(w_data["ammo_clip"])
+                else:
+                    w.apply_ammo_clip(None)
+                
+                if "ammo_clip_max" in w_data:
+                    w.apply_ammo_clip_max(w_data["ammo_clip_max"])
+                else:
+                    w.apply_ammo_clip_max(None)
+                
+                if "ammo_reserve" in w_data:
+                    w.apply_ammo_reserve(w_data["ammo_reserve"])
+                else:
+                    w.apply_ammo_reserve(None)
+                
+                if "state" in w_data:
+                    w.apply_state(w_data["state"])
+                else:
+                    w.apply_state(None)
+    
+    def _apply_match_stats(self, match_data: dict, gamestate_manager: GameStateManager):
+        pass
+
+    def _apply_player_state(self, state_data: dict, gamestate_manager: GameStateManager):
+        pass
 
     def _apply_team(team_data: dict, team: Team):
         if "score" in team_data:
