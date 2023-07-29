@@ -211,7 +211,7 @@ class Weapon:
         if self._ammo_clip_max != ammo_clip_max:
             self._ammo_clip_max = ammo_clip_max
     
-    def apply_ammo_clip(self, ammo_reserve: int):
+    def apply_ammo_reserve(self, ammo_reserve: int):
         if self._ammo_reserve != ammo_reserve:
             self._ammo_reserve = ammo_reserve
     
